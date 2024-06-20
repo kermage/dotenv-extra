@@ -1,0 +1,38 @@
+{
+  "name": "dotenv-extra",
+  "version": "0.1.0",
+  "keywords": [
+    "env",
+    ".env",
+    "dotenv"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Gene Alyson Fortunado Torcende",
+    "email": "genealyson.torcende@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kermage/dotenv-extra.git"
+  },
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "vitest",
+    "build": "unbuild",
+    "watch": "unbuild --stub",
+    "prepublishOnly": "pnpm build"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.6",
+    "prettier": "^3.3.2",
+    "typescript": "^5.4.5",
+    "unbuild": "^2.0.0",
+    "vitest": "^1.6.0"
+  }
+}
