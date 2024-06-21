@@ -12,9 +12,18 @@ import {
 vi.mock('fs');
 
 describe('read', () => {
-	it('should return an array of lines', () => {
-		vi.spyOn(fs, 'readFileSync').mockReturnValue(multilineString);
-		expect(read(dotEnvFile)).toEqual(arrayVariable);
+	vi.spyOn(fs, 'readFileSync').mockReturnValue(multilineString);
+
+	const output = read(dotEnvFile);
+
+	it('should return the content of the file', () => {
+		expect(output.content).toEqual(multilineString);
+	});
+	it('should return the line break character', () => {
+		expect(output.lbChar).toEqual('\n');
+	});
+	it('should return the array of lines list', () => {
+		expect(output.lines).toEqual(arrayVariable);
 	});
 });
 
@@ -23,7 +32,7 @@ describe('write', () => {
 		vi.spyOn(fs, 'writeFileSync').mockImplementation((_, data) =>
 			expect(data).toEqual(multilineString),
 		);
-		write(dotEnvFile, arrayVariable);
+		write(dotEnvFile, arrayVariable, '\n');
 	});
 });
 

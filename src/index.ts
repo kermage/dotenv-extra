@@ -4,11 +4,14 @@ import type { PathLike } from 'fs';
 
 export default class {
 	#file: PathLike;
+	lbChar: string;
 	lines: string[];
 
-	constructor(file: PathLike) {
+	constructor(file: PathLike, encoding: BufferEncoding = 'utf8') {
+		const output = read(file, encoding);
+		this.lbChar = output.lbChar;
+		this.lines = output.lines;
 		this.#file = file;
-		this.lines = read(file);
 	}
 
 	upsert(key: string, value: string) {
@@ -27,6 +30,6 @@ export default class {
 	}
 
 	save() {
-		write(this.#file, this.lines);
+		write(this.#file, this.lines, this.lbChar);
 	}
 }

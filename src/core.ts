@@ -1,13 +1,23 @@
 import { readFileSync, writeFileSync } from 'fs';
+import { lineBreakChar } from './helpers';
 
 import type { PathLike } from 'fs';
 
-export function read(file: PathLike) {
-	return readFileSync(file, 'utf8').toString().split('\n');
+export function read(file: PathLike, encoding: BufferEncoding = 'utf8') {
+	const content = readFileSync(file, encoding).toString();
+	const lbChar = lineBreakChar(content);
+	const lines = !lbChar ? [content] : content.split(lbChar);
+
+	return { content, lbChar, lines };
 }
 
-export function write(file: PathLike, lines: string[]) {
-	writeFileSync(file, lines.join('\n'), 'utf8');
+export function write(
+	file: PathLike,
+	lines: string[],
+	lbChar: string = '\n',
+	encoding: BufferEncoding = 'utf8',
+) {
+	writeFileSync(file, lines.join(lbChar), encoding);
 }
 
 export function find(key: string, lines: string[]) {
