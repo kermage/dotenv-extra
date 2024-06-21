@@ -1,14 +1,14 @@
 export function lineBreakChar(content: string): string {
-	const lastChar = content[content.length - 1];
-	const secondLastChar = content[content.length - 2];
+	const indexOfLineFeed = content.lastIndexOf('\n');
+	const indexOfCarriageReturn = content.lastIndexOf('\r');
 
-	if (
-		lastChar === '\r' ||
-		secondLastChar !== '\r' ||
-		secondLastChar === lastChar
-	) {
-		return lastChar;
+	if (indexOfLineFeed > indexOfCarriageReturn) {
+		if (indexOfLineFeed === indexOfCarriageReturn + 1) {
+			return '\r\n';
+		}
+
+		return '\n';
 	}
 
-	return '\r\n';
+	return indexOfCarriageReturn >= 0 ? '\r' : '';
 }
