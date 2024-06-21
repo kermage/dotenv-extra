@@ -1,6 +1,7 @@
 {
   "name": "dotenv-extra",
-  "version": "0.1.0",
+  "description": "Gracefully handle .env files",
+  "version": "0.2.0",
   "keywords": [
     "env",
     ".env",

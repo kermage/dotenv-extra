@@ -1,5 +1,7 @@
 # dotenv-extra
 
+> _"Gracefully handle .env files"_
+
 ## Usage
 
 ```ts
