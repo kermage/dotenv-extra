@@ -1,0 +1,10 @@
+files=$(git diff --cached --name-only --diff-filter=ACM | { grep -E '.[jt]sx?$' || true; })
+[ -z "$files" ] && exit 0
+
+failed=$(npm run --silent lint $files | tr '\n' ' ')
+[ -z "$failed" ] && exit 0
+
+echo >&2 "Files incorrectly formatted. Try running:"
+echo >&2 "  npm run fix $failed"
+
+exit 1

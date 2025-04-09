@@ -33,6 +33,8 @@
     }
   },
   "scripts": {
+    "lint": "prettier -l",
+    "fix": "prettier -w",
     "test": "vitest",
     "build": "unbuild",
     "watch": "unbuild --stub",
