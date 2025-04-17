@@ -1,7 +1,7 @@
 {
   "name": "dotenv-extra",
   "description": "Gracefully handle .env files",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "keywords": [
     "env",
     ".env",
@@ -21,7 +21,9 @@
     "bin",
     "dist"
   ],
-  "bin": "./bin/index.mjs",
+  "bin": {
+    "dotenv-extra": "bin/index.mjs"
+  },
   "exports": {
     ".": {
       "import": {
