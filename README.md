@@ -14,6 +14,10 @@ dotEnv.dump();
 dotEnv.save();
 ```
 
+### CLI
+
+`dotenv-extra [<key> <value>...]`
+
 ## License
 
 MIT
