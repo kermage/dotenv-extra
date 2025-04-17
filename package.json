@@ -18,8 +18,10 @@
   },
   "type": "module",
   "files": [
+    "bin",
     "dist"
   ],
+  "bin": "./bin/index.mjs",
   "exports": {
     ".": {
       "import": {
