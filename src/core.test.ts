@@ -12,7 +12,9 @@ import {
 vi.mock('fs');
 
 describe('read', () => {
-	vi.spyOn(fs, 'readFileSync').mockReturnValue(multilineString);
+	vi.spyOn(fs, 'readFileSync')
+		.mockReturnValueOnce(multilineString)
+		.mockReturnValueOnce('');
 
 	const output = read(dotEnvFile);
 
@@ -24,6 +26,14 @@ describe('read', () => {
 	});
 	it('should return the array of lines list', () => {
 		expect(output.lines).toEqual(arrayVariable);
+	});
+
+	it('should return default lbChar and empty lines', () => {
+		expect(read(dotEnvFile)).toEqual({
+			content: '',
+			lbChar: '\n',
+			lines: [],
+		});
 	});
 });
 

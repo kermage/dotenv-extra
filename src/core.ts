@@ -5,8 +5,8 @@ import type { PathLike } from 'fs';
 
 export function read(file: PathLike, encoding: BufferEncoding = 'utf8') {
 	const content = readFileSync(file, encoding).toString();
-	const lbChar = lineBreakChar(content);
-	const lines = !lbChar ? [content] : content.split(lbChar);
+	const lbChar = lineBreakChar(content) || '\n';
+	const lines = content ? content.split(lbChar) : [];
 
 	return { content, lbChar, lines };
 }
