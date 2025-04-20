@@ -24,4 +24,23 @@ describe('main entry', () => {
 			key6: 'val6',
 		});
 	});
+
+	it('should append empty new line', () => {
+		const lbChar = '\n';
+		const baseContent = multilineString + lbChar;
+		const appendedKeyValue = ['last', 'line'] as const;
+		const newLine = appendedKeyValue.join('=');
+		const newContent = [baseContent, newLine].join(lbChar);
+
+		vi.spyOn(fs, 'readFileSync').mockReturnValue(baseContent);
+		vi.spyOn(fs, 'writeFileSync').mockImplementation((_, data) =>
+			expect(data).toEqual(newContent + lbChar),
+		);
+
+		const mObj = new mainEntry(dotEnvFile);
+
+		expect(mObj.dump()).toEqual(keyValuePairs);
+		mObj.upsert(...appendedKeyValue);
+		mObj.save();
+	});
 });

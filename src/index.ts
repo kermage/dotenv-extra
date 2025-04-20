@@ -6,11 +6,13 @@ export default class {
 	#file: PathLike;
 	lbChar: string;
 	lines: string[];
+	newLine: boolean;
 
 	constructor(file: PathLike, encoding: BufferEncoding = 'utf8') {
 		const output = read(file, encoding);
 		this.lbChar = output.lbChar;
 		this.lines = output.lines;
+		this.newLine = undefined !== this.lines[this.lines.length - 1];
 		this.#file = file;
 	}
 
@@ -30,6 +32,10 @@ export default class {
 	}
 
 	save() {
+		if (this.newLine) {
+			this.lines.push('');
+		}
+
 		write(this.#file, this.lines, this.lbChar);
 	}
 }
