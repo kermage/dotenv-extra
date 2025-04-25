@@ -3,7 +3,10 @@ export function lineBreakChar(content: string): string {
 	const indexOfCarriageReturn = content.lastIndexOf('\r');
 
 	if (indexOfLineFeed > indexOfCarriageReturn) {
-		if (indexOfLineFeed === indexOfCarriageReturn + 1) {
+		if (
+			indexOfCarriageReturn > -1 &&
+			indexOfLineFeed === indexOfCarriageReturn + 1
+		) {
 			return '\r\n';
 		}
 

@@ -3,9 +3,14 @@ import { describe, expect, it } from 'vitest';
 import { lineBreakChar } from './helpers';
 
 describe('lineBreakChar', () => {
-	it('should return correct charaters', () => {
+	it('should return correct characters', () => {
 		expect(lineBreakChar('')).toEqual('');
 		expect(lineBreakChar('line')).toEqual('');
+		expect(lineBreakChar('\n')).toEqual('\n');
+		expect(lineBreakChar('\r')).toEqual('\r');
+		expect(lineBreakChar('\r\r')).toEqual('\r');
+		expect(lineBreakChar('\n\n')).toEqual('\n');
+		expect(lineBreakChar('\n\r')).toEqual('\r');
 		expect(lineBreakChar('line\n')).toEqual('\n');
 		expect(lineBreakChar('line\r')).toEqual('\r');
 		expect(lineBreakChar('line\r\r')).toEqual('\r');
