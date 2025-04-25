@@ -12,7 +12,7 @@ export default class {
 		const output = read(file, encoding);
 		this.lbChar = output.lbChar;
 		this.lines = output.lines;
-		this.newLine = undefined !== this.lines[this.lines.length - 1];
+		this.newLine = '' === this.lines[this.lines.length - 1];
 		this.#file = file;
 	}
 

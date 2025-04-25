@@ -15,3 +15,16 @@ export function lineBreakChar(content: string): string {
 
 	return indexOfCarriageReturn >= 0 ? '\r' : '';
 }
+
+export function printLineBreakChar(lbChar: string): string {
+	switch (lbChar) {
+		case '\n':
+			return '\\n';
+		case '\r':
+			return '\\r';
+		case '\r\n':
+			return '\\r\\n';
+		default:
+			return '(none)';
+	}
+}
