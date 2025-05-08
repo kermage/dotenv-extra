@@ -43,4 +43,11 @@ describe('main entry', () => {
 		mObj.upsert(...appendedKeyValue);
 		mObj.save();
 	});
+
+	it('should return false when save fails', () => {
+		const mObj = new mainEntry(dotEnvFile);
+
+		mObj.upsert('key', 'value').upsert('foo', 'bar');
+		expect(mObj.upsert('baz', 'qux').save()).toBe(false);
+	});
 });

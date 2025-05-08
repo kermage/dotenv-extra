@@ -25,6 +25,8 @@ export default class {
 		} else {
 			this.lines.push(item);
 		}
+
+		return this;
 	}
 
 	dump() {
@@ -36,6 +38,12 @@ export default class {
 			this.lines.push('');
 		}
 
-		write(this.#file, this.lines, this.lbChar);
+		try {
+			write(this.#file, this.lines, this.lbChar);
+
+			return true;
+		} catch {
+			return false;
+		}
 	}
 }
