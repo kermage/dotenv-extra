@@ -17,16 +17,23 @@ import DotEnv from 'dotenv-extra';
 const dotEnv = new DotEnv('path-to-file');
 
 // Update or insert an entry
-dotEnv.upsert('key', 'value');
+dotEnv
+  .upsert('key', 'value')
+  .upsert('foo', 'bar')
+  .upsert('baz', 'qux');
 
 // Get the current entries as an object
 const entries = dotEnv.dump();
 
 console.log(entries);
-// { key: 'value', ... }
+// { key: 'value', foo: 'bar', baz: 'qux', ... }
 
 // Save the changes back to the file
-dotEnv.save();
+const success = dotEnv.save();
+
+if (!success) {
+  console.error('Failed to save changes');
+}
 ```
 
 ### CLI
@@ -35,8 +42,8 @@ dotEnv.save();
 npx dotenv-extra [<key> <value>...]
 ```
 
-* Expects a `.env` file to be present and writable.
-* File creation is intentionally not implemented.
+- Expects a `.env` file to be present and writable.
+- File creation is intentionally not implemented.
 
 2-liner example of quickly setting up a project:
 
