@@ -66,7 +66,7 @@ describe('parse', () => {
 	});
 
 	it('should ignore commented lines', () => {
-		const lines = ['FOO=bar', '# comment line', '# QUX=quux', 'BAZ=qux'];
+		const lines = ['FOO=bar', '# comment line', '  # QUX=quux ', 'BAZ=qux'];
 		const result = parse(lines);
 		expect(result).toEqual({ FOO: 'bar', BAZ: 'qux' });
 	});
@@ -75,5 +75,21 @@ describe('parse', () => {
 		const lines = ['FOO=bar', '', '   ', 'NO_EQUAL_SIGN', '=VALUE_ONLY'];
 		const result = parse(lines);
 		expect(result).toEqual({ FOO: 'bar' });
+	});
+
+	it('should handle spaces around =', () => {
+		const lines = [' FOO = bar ', 'BAZ  =  qux'];
+		const result = parse(lines);
+		expect(result).toEqual({ FOO: 'bar', BAZ: 'qux' });
+	});
+
+	it('should handle multiple = signs', () => {
+		const lines = [
+			'CONNECTION_STRING=mysql://user:pass@host:3306/db?option=1',
+		];
+		const result = parse(lines);
+		expect(result).toEqual({
+			CONNECTION_STRING: 'mysql://user:pass@host:3306/db?option=1',
+		});
 	});
 });
