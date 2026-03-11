@@ -29,13 +29,17 @@ export function find(key: string, lines: string[]) {
 export function parse(lines: string[]) {
 	return lines.reduce(
 		(acc, line) => {
-			if (!line) {
+			if (!line || line.startsWith('#') || !line.includes('=')) {
 				return acc;
 			}
 
 			const [key, value] = line.split('=', 2);
 
-			return { ...acc, [key.trim()]: value.trim() };
+			if (key) {
+				return { ...acc, [key.trim()]: value.trim() };
+			}
+
+			return acc;
 		},
 		{} as Record<string, string>,
 	);

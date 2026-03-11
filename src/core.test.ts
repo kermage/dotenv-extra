@@ -58,4 +58,22 @@ describe('parse', () => {
 	it('should return a key-value pair', () => {
 		expect(parse(arrayVariable)).toEqual(keyValuePairs);
 	});
+
+	it('should ignore empty lines', () => {
+		const lines = ['FOO=bar', '', '   '];
+		const result = parse(lines);
+		expect(result).toEqual({ FOO: 'bar' });
+	});
+
+	it('should ignore commented lines', () => {
+		const lines = ['FOO=bar', '# comment line', '# QUX=quux', 'BAZ=qux'];
+		const result = parse(lines);
+		expect(result).toEqual({ FOO: 'bar', BAZ: 'qux' });
+	});
+
+	it('should ignore invalid lines', () => {
+		const lines = ['FOO=bar', '', '   ', 'NO_EQUAL_SIGN', '=VALUE_ONLY'];
+		const result = parse(lines);
+		expect(result).toEqual({ FOO: 'bar' });
+	});
 });
