@@ -65,10 +65,27 @@ export function parse(lines: string[]) {
 			}
 
 			const [key, ...valueParts] = trimmedLine.split('=');
-			const value = valueParts.join('=');
+			let value = valueParts.join('=').trim();
+
+			// Strip inline comments
+			const commentMatch = value.match(/(.*?)\s+#/);
+			if (commentMatch) {
+				value = commentMatch[1].trim();
+			} else if (value.startsWith('#')) {
+				value = '';
+			}
+
+			// Strip quotes
+			if (
+				value.length >= 2 &&
+				((value.startsWith('"') && value.endsWith('"')) ||
+					(value.startsWith("'") && value.endsWith("'")))
+			) {
+				value = value.slice(1, -1);
+			}
 
 			if (key) {
-				return { ...acc, [key.trim()]: value.trim() };
+				return { ...acc, [key.trim()]: value };
 			}
 
 			return acc;

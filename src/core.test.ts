@@ -140,4 +140,16 @@ describe('parse', () => {
 			CONNECTION_STRING: 'mysql://user:pass@host:3306/db?option=1',
 		});
 	});
+
+	it('should strip inline comments', () => {
+		const lines = ['FOO=bar # comment', 'BAZ=qux  # another comment'];
+		const result = parse(lines);
+		expect(result).toEqual({ FOO: 'bar', BAZ: 'qux' });
+	});
+
+	it('should strip quotes from values', () => {
+		const lines = ['FOO="bar"', "BAZ='qux'"];
+		const result = parse(lines);
+		expect(result).toEqual({ FOO: 'bar', BAZ: 'qux' });
+	});
 });
