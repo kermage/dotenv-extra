@@ -50,4 +50,20 @@ describe('main entry', () => {
 		mObj.upsert('key', 'value').upsert('foo', 'bar');
 		expect(mObj.upsert('baz', 'qux').save()).toBe(false);
 	});
+
+	it('should not mutate lines array when saving with trailing newline', () => {
+		const lbChar = '\n';
+		const baseContent = multilineString + lbChar;
+
+		vi.spyOn(fs, 'readFileSync').mockReturnValue(baseContent);
+		vi.spyOn(fs, 'writeFileSync').mockImplementation(() => {});
+
+		const mObj = new mainEntry(dotEnvFile);
+
+		expect(mObj.lines.length).toBe(3);
+		mObj.save();
+		expect(mObj.lines.length).toBe(3);
+		mObj.save();
+		expect(mObj.lines.length).toBe(3);
+	});
 });

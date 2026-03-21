@@ -13,6 +13,9 @@ export default class {
 		this.lbChar = output.lbChar;
 		this.lines = output.lines;
 		this.newLine = '' === this.lines[this.lines.length - 1];
+		if (this.newLine && this.lines.length > 0) {
+			this.lines.pop();
+		}
 		this.#file = file;
 	}
 
@@ -34,12 +37,10 @@ export default class {
 	}
 
 	save() {
-		if (this.newLine) {
-			this.lines.push('');
-		}
+		const linesToWrite = this.newLine ? [...this.lines, ''] : this.lines;
 
 		try {
-			write(this.#file, this.lines, this.lbChar);
+			write(this.#file, linesToWrite, this.lbChar);
 
 			return true;
 		} catch {
