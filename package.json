@@ -1,7 +1,7 @@
 {
   "name": "dotenv-extra",
   "description": "Gracefully handle .env files",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "keywords": [
     "env",
     ".env",
@@ -50,10 +50,10 @@
     "prepublishOnly": "pnpm build"
   },
   "devDependencies": {
-    "@types/node": "^22.19.15",
+    "@types/node": "^25.5.0",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "unbuild": "^3.6.1",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.0"
   }
 }
