@@ -1,6 +1,6 @@
 import { find, parse, read, write } from './core';
 
-import type { PathLike } from 'fs';
+import type { PathLike } from 'node:fs';
 
 export default class {
 	#file: PathLike;

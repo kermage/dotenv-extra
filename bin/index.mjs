@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { accessSync, constants } from 'fs';
-import { createRequire } from 'module';
+import { accessSync, constants } from 'node:fs';
+import { createRequire } from 'node:module';
 import DotEnv from '../dist/index.mjs';
 
 const require = createRequire(import.meta.url);

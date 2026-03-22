@@ -1,7 +1,7 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { lineBreakChar } from './helpers';
 
-import type { PathLike } from 'fs';
+import type { PathLike } from 'node:fs';
 
 export function read(file: PathLike, encoding: BufferEncoding = 'utf8') {
 	const content = readFileSync(file, encoding).toString();

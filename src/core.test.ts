@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import { find, parse, read, write } from './core';
 
@@ -9,7 +9,7 @@ import {
 	multilineString,
 } from '../tests/constants';
 
-vi.mock('fs');
+vi.mock('node:fs');
 
 describe('read', () => {
 	vi.spyOn(fs, 'readFileSync')
