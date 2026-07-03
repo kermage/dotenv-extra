@@ -152,4 +152,101 @@ describe('parse', () => {
 		const result = parse(lines);
 		expect(result).toEqual({ FOO: 'bar', BAZ: 'qux' });
 	});
+
+	it('should preserve quoted prefixes with literal suffixes', () => {
+		expect(parse(['A="foo"bar'])).toEqual({ A: '"foo"bar' });
+	});
+
+	it('should halve a pair of quoted terminal backslashes', () => {
+		expect(parse(['A="two\\\\"'])).toEqual({ A: 'two\\' });
+	});
+
+	it('should not blow up on a long backslash run before a literal suffix inside quotes', () => {
+		const start = performance.now();
+		const line = `A="${'\\'.repeat(100000)}x"`;
+
+		expect(parse([line])).toEqual({ A: `${'\\'.repeat(100000)}x` });
+		expect(performance.now() - start).toBeLessThan(500);
+	});
+
+
+	it('should preserve an escaped terminal quote without a closing quote', () => {
+		expect(parse(['A="two\\"'])).toEqual({ A: '"two\\"' });
+	});
+
+	it('should keep hash inside double-quoted values', () => {
+		expect(parse(['FOO="abc # def"'])).toEqual({ FOO: 'abc # def' });
+	});
+
+	it('should keep hash inside single-quoted values', () => {
+		expect(parse(["BAR='it is # here'"])).toEqual({ BAR: 'it is # here' });
+	});
+
+	it('should strip inline comments after quoted values', () => {
+		expect(parse(['FOO="bar" # comment'])).toEqual({ FOO: 'bar' });
+	});
+
+	it('should preserve unterminated quotes verbatim', () => {
+		expect(parse(['D="unterminated'])).toEqual({ D: '"unterminated' });
+		expect(parse(['E="has # inside'])).toEqual({ E: '"has # inside' });
+	});
+
+	it('should locate the outer closing quote past an escaped inner quote', () => {
+		expect(parse(["BAR='it\\'s ready'"])).toEqual({ BAR: "it\\'s ready" });
+		expect(parse(['FOO="a\\"b" # comment'])).toEqual({ FOO: 'a\\"b' });
+		expect(parse(['FOO="a\\"b" c"'])).toEqual({ FOO: 'a\\"b" c' });
+	});
+
+	it('should handle empty quoted values', () => {
+		expect(parse(['A=""'])).toEqual({ A: '' });
+		expect(parse(["B=''"])).toEqual({ B: '' });
+	});
+
+	it('should treat hash-only value as empty', () => {
+		expect(parse(['C=#only'])).toEqual({ C: '' });
+	});
+
+	it('strips a leading export prefix from the key', () => {
+		expect(parse(['export FOO=bar'])).toEqual({ FOO: 'bar' });
+		expect(parse(['export KEY=value'])).toEqual({ KEY: 'value' });
+	});
+
+	it('skips a bare export line without an equals', () => {
+		const lines = ['export', 'FOO=bar'];
+		const result = parse(lines);
+		expect(result).toEqual({ FOO: 'bar' });
+	});
+
+	it('does not recognize backticks as quote characters', () => {
+		expect(parse(['A=`bar`'])).toEqual({ A: '`bar`' });
+	});
+
+	it('does not treat a hash with no preceding whitespace as a comment', () => {
+		expect(parse(['FOO=bar#baz'])).toEqual({ FOO: 'bar#baz' });
+	});
+
+	it('lets the last occurrence of a duplicate key win', () => {
+		expect(parse(['A=1', 'A=2'])).toEqual({ A: '2' });
+	});
+
+	it('parses a bare unquoted empty value', () => {
+		expect(parse(['FOO='])).toEqual({ FOO: '' });
+	});
+
+	it('keeps an escaped newline as two literal characters', () => {
+		expect(parse(['A=foo\\nbar'])).toEqual({ A: 'foo\\nbar' });
+	});
+
+	it('does not expand variable references', () => {
+		expect(parse(['A=${FOO}'])).toEqual({ A: '${FOO}' });
+		expect(parse(['B=$BAR'])).toEqual({ B: '$BAR' });
+	});
+
+	it('does not treat a colon as a key-value separator', () => {
+		expect(parse(['KEY: value'])).toEqual({});
+	});
+
+	it('cannot close a quoted value on a following physical line', () => {
+		expect(parse(['A="line1', 'line2"'])).toEqual({ A: '"line1' });
+	});
 });

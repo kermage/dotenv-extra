@@ -28,3 +28,12 @@ export function printLineBreakChar(lbChar: string): string {
 			return '(none)';
 	}
 }
+
+/** Count consecutive backslashes at the end of a string. */
+export function countTerminalBackslashes(value: string): number {
+	let count = 0;
+	while (value[value.length - 1 - count] === '\\') {
+		count++;
+	}
+	return count;
+}

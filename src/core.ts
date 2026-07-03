@@ -1,10 +1,10 @@
 import { readFileSync, writeFileSync } from 'node:fs';
-import { lineBreakChar } from './helpers';
+import { countTerminalBackslashes, lineBreakChar } from './helpers';
 
 import type { PathLike } from 'node:fs';
 
 export function read(file: PathLike, encoding: BufferEncoding = 'utf8') {
-	const content = readFileSync(file, encoding).toString();
+	const content = readFileSync(file, encoding);
 	const lbChar = lineBreakChar(content) || '\n';
 	const lines = content ? content.split(lbChar) : [];
 
@@ -64,24 +64,52 @@ export function parse(lines: string[]) {
 				return acc;
 			}
 
-			const [key, ...valueParts] = trimmedLine.split('=');
+			const keyLine = trimmedLine.startsWith('export ')
+				? trimmedLine.slice(7)
+				: trimmedLine;
+			const [key, ...valueParts] = keyLine.split('=');
 			let value = valueParts.join('=').trim();
 
-			// Strip inline comments
-			const commentMatch = value.match(/(.*?)\s+#/);
-			if (commentMatch) {
-				value = commentMatch[1].trim();
-			} else if (value.startsWith('#')) {
-				value = '';
-			}
+			const quote = value[0];
+			if (quote === '"' || quote === "'") {
+				let closingIndex = -1;
+				for (let i = 1; i < value.length; i++) {
+					if (value[i] !== quote) {
+						continue;
+					}
 
-			// Strip quotes
-			if (
-				value.length >= 2 &&
-				((value.startsWith('"') && value.endsWith('"')) ||
-					(value.startsWith("'") && value.endsWith("'")))
-			) {
-				value = value.slice(1, -1);
+					let backslashes = 0;
+					for (let j = i - 1; j >= 0 && value[j] === '\\'; j--) {
+						backslashes++;
+					}
+					const remainder = value.slice(i + 1).trim();
+					const closesValue =
+						remainder === '' || remainder.startsWith('#');
+
+					if (closesValue && backslashes % 2 === 0) {
+						closingIndex = i;
+						break;
+					}
+				}
+
+				if (closingIndex !== -1) {
+					const quotedValue = value.slice(1, closingIndex);
+					const terminalBackslashCount =
+						countTerminalBackslashes(quotedValue);
+					value = terminalBackslashCount
+						? quotedValue.slice(
+								0,
+								quotedValue.length - terminalBackslashCount,
+							) + '\\'.repeat(terminalBackslashCount / 2)
+						: quotedValue;
+				}
+			} else {
+				const commentMatch = value.match(/(.*?)\s+#/);
+				if (commentMatch) {
+					value = commentMatch[1].trim();
+				} else if (value.startsWith('#')) {
+					value = '';
+				}
 			}
 
 			if (key) {
