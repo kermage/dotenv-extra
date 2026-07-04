@@ -37,3 +37,34 @@ export function countTerminalBackslashes(value: string): number {
 	}
 	return count;
 }
+
+/** Wrap value in quotes if it contains inline-comment triggers. */
+export function quoteIfNeeded(value: string): string {
+	const needsQuotes =
+		/^\s|\s$/.test(value) ||
+		/\s#/.test(value) ||
+		value.startsWith('#') ||
+		value.startsWith('"') ||
+		value.startsWith("'");
+
+	if (!needsQuotes) {
+		return value;
+	}
+	const terminalBackslashCount = countTerminalBackslashes(value);
+	const quotedValue = terminalBackslashCount
+		? value.slice(0, value.length - terminalBackslashCount) +
+			'\\'.repeat(terminalBackslashCount * 2)
+		: value;
+
+	if (!value.includes('"')) {
+		return `"${quotedValue}"`;
+	}
+
+	if (!value.includes("'")) {
+		return `'${quotedValue}'`;
+	}
+
+	throw new TypeError(
+		'Value requires quoting but contains both quote characters',
+	);
+}

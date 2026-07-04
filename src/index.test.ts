@@ -66,4 +66,51 @@ describe('main entry', () => {
 		mObj.save();
 		expect(mObj.lines.length).toBe(3);
 	});
+
+	it('should reject keys or values containing line breaks', () => {
+		vi.spyOn(fs, 'readFileSync').mockReturnValue('A=1\n');
+		const dotenv = new mainEntry(dotEnvFile);
+		expect(() => dotenv.upsert('KEY', 'a\nEVIL=pwned')).toThrow(TypeError);
+		expect(() => dotenv.upsert('KEY', 'a\rEVIL=pwned')).toThrow(TypeError);
+		expect(() => dotenv.upsert('BAD\nKEY', 'x')).toThrow(TypeError);
+	});
+
+	it('should reject empty keys', () => {
+		vi.spyOn(fs, 'readFileSync').mockReturnValue('A=1\n');
+		const dotenv = new mainEntry(dotEnvFile);
+		expect(() => dotenv.upsert('', 'value')).toThrow(TypeError);
+	});
+
+	it('should reject keys containing equals', () => {
+		vi.spyOn(fs, 'readFileSync').mockReturnValue('A=1\n');
+		const dotenv = new mainEntry(dotEnvFile);
+		expect(() => dotenv.upsert('A=B', 'value')).toThrow(TypeError);
+	});
+
+	it('should reject keys that start with export prefix syntax', () => {
+		vi.spyOn(fs, 'readFileSync').mockReturnValue('A=1\n');
+		const dotenv = new mainEntry(dotEnvFile);
+		expect(() => dotenv.upsert('export FOO', 'x')).toThrow(TypeError);
+	});
+
+	it('should round-trip values that need quoting', () => {
+		vi.spyOn(fs, 'readFileSync').mockReturnValue('A=1\n');
+		const dotenv = new mainEntry(dotEnvFile);
+		dotenv.upsert('MSG', 'hello # world');
+		expect(dotenv.dump().MSG).toBe('hello # world');
+	});
+
+	it('should round-trip quoted values ending in backslash', () => {
+		vi.spyOn(fs, 'readFileSync').mockReturnValue('A=1\n');
+		const dotenv = new mainEntry(dotEnvFile);
+		dotenv.upsert('MSG', 'hello # world\\');
+		expect(dotenv.dump().MSG).toBe('hello # world\\');
+	});
+
+	it('should round-trip terminal backslash values containing single quotes', () => {
+		vi.spyOn(fs, 'readFileSync').mockReturnValue('A=1\n');
+		const dotenv = new mainEntry(dotEnvFile);
+		dotenv.upsert('MSG', "it's # here\\");
+		expect(dotenv.dump().MSG).toBe("it's # here\\");
+	});
 });

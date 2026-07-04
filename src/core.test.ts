@@ -169,6 +169,12 @@ describe('parse', () => {
 		expect(performance.now() - start).toBeLessThan(500);
 	});
 
+	it('should halve longer runs of quoted terminal backslashes', () => {
+		expect(parse(['A="six\\\\\\\\\\\\"'])).toEqual({ A: 'six\\\\\\' });
+		expect(parse(['A="eight\\\\\\\\\\\\\\\\"'])).toEqual({
+			A: 'eight\\\\\\\\',
+		});
+	});
 
 	it('should preserve an escaped terminal quote without a closing quote', () => {
 		expect(parse(['A="two\\"'])).toEqual({ A: '"two\\"' });

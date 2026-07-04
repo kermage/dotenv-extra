@@ -1,4 +1,5 @@
 import { find, parse, read, write } from './core';
+import { quoteIfNeeded } from './helpers';
 
 import type { PathLike } from 'node:fs';
 
@@ -20,7 +21,22 @@ export default class {
 	}
 
 	upsert(key: string, value: string) {
-		const item = `${key}=${value}`;
+		if (/[\r\n]/.test(key) || /[\r\n]/.test(value)) {
+			throw new TypeError('Keys and values must not contain line breaks');
+		}
+		if (key.trim() === '' || key !== key.trim()) {
+			throw new TypeError(
+				'Key must not be empty or padded with whitespace',
+			);
+		}
+		if (key.includes('=')) {
+			throw new TypeError('Key must not contain "="');
+		}
+		if (/^export\s+/.test(key)) {
+			throw new TypeError('Key must not start with export prefix');
+		}
+
+		const item = `${key}=${quoteIfNeeded(value)}`;
 		const line = find(key, this.lines);
 
 		if (line) {
