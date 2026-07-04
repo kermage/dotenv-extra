@@ -3,30 +3,43 @@ import { describe, expect, it } from 'vitest';
 import { lineBreakChar, printLineBreakChar, quoteIfNeeded } from './helpers';
 
 describe('lineBreakChar', () => {
-	it('should return correct characters', () => {
-		expect(lineBreakChar('')).toEqual('');
-		expect(lineBreakChar('line')).toEqual('');
-		expect(lineBreakChar('\n')).toEqual('\n');
-		expect(lineBreakChar('\r')).toEqual('\r');
-		expect(lineBreakChar('\r\r')).toEqual('\r');
-		expect(lineBreakChar('\n\n')).toEqual('\n');
-		expect(lineBreakChar('\n\r')).toEqual('\r');
-		expect(lineBreakChar('line\n')).toEqual('\n');
-		expect(lineBreakChar('line\r')).toEqual('\r');
-		expect(lineBreakChar('line\r\r')).toEqual('\r');
-		expect(lineBreakChar('line\n\n')).toEqual('\n');
-		expect(lineBreakChar('line\r\n')).toEqual('\r\n');
-		expect(lineBreakChar('line\n\r')).toEqual('\r');
-		expect(lineBreakChar('line\nline')).toEqual('\n');
-		expect(lineBreakChar('line\rline')).toEqual('\r');
-		expect(lineBreakChar('line\r\rline')).toEqual('\r');
-		expect(lineBreakChar('line\n\nline')).toEqual('\n');
-		expect(lineBreakChar('line\r\nline')).toEqual('\r\n');
-		expect(lineBreakChar('line\n\rline')).toEqual('\r');
-		expect(lineBreakChar('line\rline\nline')).toEqual('\n');
-		expect(lineBreakChar('line\nline\rline')).toEqual('\r');
-		expect(lineBreakChar('line\rline\nline\r')).toEqual('\r');
-		expect(lineBreakChar('line\nline\rline\n')).toEqual('\n');
+	it('should return empty string for no line breaks', () => {
+		expect(lineBreakChar('')).toBe('');
+		expect(lineBreakChar('line')).toBe('');
+	});
+
+	it('should detect pure LF', () => {
+		expect(lineBreakChar('a=1\nb=2\n')).toBe('\n');
+	});
+
+	it('should detect pure CRLF', () => {
+		expect(lineBreakChar('a=1\r\nb=2\r\n')).toBe('\r\n');
+	});
+
+	it('should detect pure CR', () => {
+		expect(lineBreakChar('a=1\rb=2\r')).toBe('\r');
+	});
+
+	it('should throw on mixed LF and CRLF', () => {
+		expect(() => lineBreakChar('a=1\r\nb=2\n')).toThrow(
+			/Mixed line endings detected/,
+		);
+	});
+
+	it('should throw on mixed CR and LF', () => {
+		expect(() => lineBreakChar('a=1\nb=2\r')).toThrow(
+			/Mixed line endings detected/,
+		);
+	});
+
+	it('should throw on mixed CR and CRLF', () => {
+		expect(() => lineBreakChar('a=1\r\nb=2\r')).toThrow(
+			/Mixed line endings detected/,
+		);
+	});
+
+	it('should not confuse CRLF with separate CR and LF', () => {
+		expect(lineBreakChar('a=1\r\nb=2\r\nc=3\r\n')).toBe('\r\n');
 	});
 });
 

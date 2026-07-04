@@ -1,19 +1,25 @@
 export function lineBreakChar(content: string): string {
-	const indexOfLineFeed = content.lastIndexOf('\n');
-	const indexOfCarriageReturn = content.lastIndexOf('\r');
+	const counts: [string, number][] = [
+		['\r\n', (content.match(/\r\n/g) ?? []).length],
+		['\n', (content.match(/(?<!\r)\n/g) ?? []).length],
+		['\r', (content.match(/\r(?!\n)/g) ?? []).length],
+	];
 
-	if (indexOfLineFeed > indexOfCarriageReturn) {
-		if (
-			indexOfCarriageReturn > -1 &&
-			indexOfLineFeed === indexOfCarriageReturn + 1
-		) {
-			return '\r\n';
-		}
-
-		return '\n';
+	const nonZero = counts.filter(([, count]) => count > 0);
+	if (nonZero.length > 1) {
+		const detail = nonZero
+			.map(([seq, c]) => `${c} ${printLineBreakChar(seq)}`)
+			.join(', ');
+		throw new Error(
+			`Mixed line endings detected (${detail}). Normalize the file before editing.`,
+		);
 	}
 
-	return indexOfCarriageReturn >= 0 ? '\r' : '';
+	if (nonZero.length === 1) {
+		return nonZero[0][0];
+	}
+
+	return '';
 }
 
 export function printLineBreakChar(lbChar: string): string {
