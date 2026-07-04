@@ -40,7 +40,7 @@ export default class {
 		const line = find(key, this.lines);
 
 		if (line) {
-			this.lines.splice(this.lines.indexOf(line), 1, item);
+			this.lines.splice(this.lines.lastIndexOf(line), 1, item);
 		} else {
 			this.lines.push(item);
 		}

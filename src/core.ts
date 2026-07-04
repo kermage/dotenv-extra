@@ -36,20 +36,27 @@ export function find(key: string, lines: string[]) {
 	const commentedRegex = new RegExp(`^\\s*#\\s*${escapedKey}\\s*=`);
 
 	/**
-	 * 3. Prioritize active (uncommented) lines first.
-	 * This ensures we don't accidentally update a commented-out version
-	 * if a live one already exists.
+	 * 3. Prioritize active (uncommented) lines first, and pick the last
+	 * one when duplicates exist so the most recently written entry wins.
+	 * Warn when duplicates are found, since this usually indicates
+	 * accidental repetition in the file.
 	 */
-	const uncommentedLine = lines.find((line) => uncommentedRegex.test(line));
+	const activeMatches = lines.filter((line) => uncommentedRegex.test(line));
+	if (activeMatches.length > 1) {
+		console.warn('dotenv-extra: duplicate entries for key "%s"', key);
+	}
+
+	const uncommentedLine = activeMatches[activeMatches.length - 1];
 	if (uncommentedLine) {
 		return uncommentedLine;
 	}
 
 	/**
 	 * 4. Fallback: If no active line is found, look for a commented-out version.
-	 * This allows the upsert method to "reactivate" a setting.
+	 * This allows the upsert method to "reactivate" a setting. Pick the
+	 * last commented match for the same duplicate-policy reason.
 	 */
-	return lines.find((line) => commentedRegex.test(line));
+	return lines.findLast((line) => commentedRegex.test(line));
 }
 
 export function parse(lines: string[]) {

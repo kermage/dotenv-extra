@@ -113,4 +113,13 @@ describe('main entry', () => {
 		dotenv.upsert('MSG', "it's # here\\");
 		expect(dotenv.dump().MSG).toBe("it's # here\\");
 	});
+
+	it('should update the occurrence that dump reads', () => {
+		vi.spyOn(fs, 'readFileSync').mockReturnValue('FOO=bar\nFOO=old\n');
+		const dotenv = new mainEntry(dotEnvFile);
+		vi.spyOn(console, 'warn').mockImplementation(() => {});
+		dotenv.upsert('FOO', 'new');
+		expect(dotenv.dump().FOO).toBe('new');
+		expect(dotenv.lines).toEqual(['FOO=bar', 'FOO=new']);
+	});
 });

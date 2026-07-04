@@ -73,7 +73,33 @@ describe('find', () => {
 
 	it('should return commented line if no uncommented ones exist', () => {
 		const lines = ['# FOO=bar', '# FOO=qux'];
-		expect(find('FOO', lines)).toEqual('# FOO=bar');
+		expect(find('FOO', lines)).toEqual('# FOO=qux');
+	});
+
+	it('should find the last duplicate occurrence', () => {
+		expect(find('FOO', ['FOO=a', 'BAR=b', 'FOO=c'])).toBe('FOO=c');
+	});
+
+	it('should find the last commented occurrence when no active exists', () => {
+		const lines = ['# FOO=bar', '# FOO=qux'];
+		expect(find('FOO', lines)).toEqual('# FOO=qux');
+	});
+
+	it('should warn about duplicate active entries', () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		find('FOO', ['FOO=a', 'BAR=b', 'FOO=c']);
+		expect(spy).toHaveBeenCalledWith(
+			'dotenv-extra: duplicate entries for key "%s"',
+			'FOO',
+		);
+		spy.mockRestore();
+	});
+
+	it('should not warn when only one active entry exists', () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		find('FOO', ['FOO=a', 'BAR=b']);
+		expect(spy).not.toHaveBeenCalled();
+		spy.mockRestore();
 	});
 
 	it('should handle spaces after # in commented lines', () => {
