@@ -42,4 +42,7 @@ for (let i = 0; i < args.length; i += 2) {
 	dotenv.upsert(args[i], args[i + 1]);
 }
 
-dotenv.save();
+if (!dotenv.save()) {
+	process.stderr.write(`Failed to write ${file}\n`);
+	process.exit(1);
+}
