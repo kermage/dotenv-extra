@@ -3,8 +3,9 @@ import { quoteIfNeeded } from './helpers';
 
 import type { PathLike } from 'node:fs';
 
-export default class {
+export default class DotEnv {
 	#file: PathLike;
+	#encoding: BufferEncoding;
 	lbChar: string;
 	lines: string[];
 	newLine: boolean;
@@ -18,6 +19,7 @@ export default class {
 			this.lines.pop();
 		}
 		this.#file = file;
+		this.#encoding = encoding;
 	}
 
 	upsert(key: string, value: string) {
@@ -56,7 +58,7 @@ export default class {
 		const linesToWrite = this.newLine ? [...this.lines, ''] : this.lines;
 
 		try {
-			write(this.#file, linesToWrite, this.lbChar);
+			write(this.#file, linesToWrite, this.lbChar, this.#encoding);
 
 			return true;
 		} catch {

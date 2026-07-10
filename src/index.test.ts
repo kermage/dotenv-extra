@@ -44,6 +44,21 @@ describe('main entry', () => {
 		mObj.save();
 	});
 
+	it('should not append a new line when the file has none', () => {
+		const baseContent = 'A=1\nB=2';
+
+		vi.spyOn(fs, 'readFileSync').mockReturnValue(baseContent);
+		const writeFileSyncSpy = vi
+			.spyOn(fs, 'writeFileSync')
+			.mockImplementation((_, data) => expect(data).toEqual(baseContent));
+
+		const mObj = new mainEntry(dotEnvFile);
+
+		mObj.save();
+
+		expect(writeFileSyncSpy).toHaveBeenCalled();
+	});
+
 	it('should return false when save fails', () => {
 		const mObj = new mainEntry(dotEnvFile);
 
@@ -121,5 +136,25 @@ describe('main entry', () => {
 		dotenv.upsert('FOO', 'new');
 		expect(dotenv.dump().FOO).toBe('new');
 		expect(dotenv.lines).toEqual(['FOO=bar', 'FOO=new']);
+	});
+
+	it('should save with the encoding given at construction', () => {
+		vi.spyOn(fs, 'readFileSync').mockReturnValue('A=1\n');
+		const writeFileSyncSpy = vi
+			.spyOn(fs, 'writeFileSync')
+			.mockImplementation(() => {});
+		const dotenv = new mainEntry(dotEnvFile, 'latin1');
+
+		dotenv.save();
+
+		expect(writeFileSyncSpy).toHaveBeenCalledWith(
+			expect.any(String),
+			expect.any(String),
+			'latin1',
+		);
+	});
+
+	it('should have a named class', () => {
+		expect(mainEntry.name).toBe('DotEnv');
 	});
 });
