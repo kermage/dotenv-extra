@@ -1,10 +1,10 @@
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import mainEntry from './index';
 
 import { dotEnvFile, keyValuePairs, multilineString } from '../tests/constants';
 
-vi.mock('fs');
+vi.mock('node:fs');
 
 describe('main entry', () => {
 	it('should return an array of lines', () => {
@@ -60,10 +60,13 @@ describe('main entry', () => {
 	});
 
 	it('should return false when save fails', () => {
-		const mObj = new mainEntry(dotEnvFile);
+		vi.spyOn(fs, 'readFileSync').mockReturnValue('A=1\n');
+		const dotenv = new mainEntry(dotEnvFile);
+		vi.spyOn(fs, 'writeFileSync').mockImplementation(() => {
+			throw new Error('EACCES');
+		});
 
-		mObj.upsert('key', 'value').upsert('foo', 'bar');
-		expect(mObj.upsert('baz', 'qux').save()).toBe(false);
+		expect(dotenv.save()).toBe(false);
 	});
 
 	it('should not mutate lines array when saving with trailing newline', () => {

@@ -12,23 +12,26 @@ import {
 vi.mock('node:fs');
 
 describe('read', () => {
-	vi.spyOn(fs, 'readFileSync')
-		.mockReturnValueOnce(multilineString)
-		.mockReturnValueOnce('');
-
-	const output = read(dotEnvFile);
-
 	it('should return the content of the file', () => {
+		vi.spyOn(fs, 'readFileSync').mockReturnValueOnce(multilineString);
+		const output = read(dotEnvFile);
 		expect(output.content).toEqual(multilineString);
 	});
+
 	it('should return the line break character', () => {
+		vi.spyOn(fs, 'readFileSync').mockReturnValueOnce(multilineString);
+		const output = read(dotEnvFile);
 		expect(output.lbChar).toEqual('\n');
 	});
+
 	it('should return the array of lines list', () => {
+		vi.spyOn(fs, 'readFileSync').mockReturnValueOnce(multilineString);
+		const output = read(dotEnvFile);
 		expect(output.lines).toEqual(arrayVariable);
 	});
 
 	it('should return default lbChar and empty lines', () => {
+		vi.spyOn(fs, 'readFileSync').mockReturnValueOnce('');
 		expect(read(dotEnvFile)).toEqual({
 			content: '',
 			lbChar: '\n',
