@@ -25,6 +25,14 @@ describe('main entry', () => {
 		});
 	});
 
+	it('should reject mixed CRLF and LF line endings at construction', () => {
+		vi.spyOn(fs, 'readFileSync').mockReturnValue('A=1\r\nB=2\n');
+
+		expect(() => new mainEntry(dotEnvFile)).toThrow(
+			'Mixed line endings detected (1 \\r\\n, 1 \\n). Normalize the file before editing.',
+		);
+	});
+
 	it('should append empty new line', () => {
 		const lbChar = '\n';
 		const baseContent = multilineString + lbChar;
