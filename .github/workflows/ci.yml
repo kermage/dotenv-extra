@@ -36,5 +36,5 @@ jobs:
       - run: pnpm run typecheck
       - run: pnpm build
       - run: pnpm run test:coverage
-      - run: npx publint
-      - run: npx @arethetypeswrong/cli --pack . --profile node16
+      - run: pnpx publint
+      - run: pnpx @arethetypeswrong/cli $(pnpm pack | tail -n1) --profile node16
