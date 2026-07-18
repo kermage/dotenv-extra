@@ -1,34 +1,45 @@
 name: Create Tag
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ['CI']
+    types:
+      - completed
 
 permissions:
-  contents: write
+  contents: read
 
-env:
-  PATTERN: '[0-9]+\.[0-9]+\.[0-9]+'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
 
 jobs:
   create:
-    if: ${{ startsWith( github.event.head_commit.message, 'bump version to ' ) }}
+    if: >-
+      ${{ github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_branch == 'main' &&
+          startsWith(github.event.workflow_run.head_commit.message, 'bump version to ') }}
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.workflow_run.head_sha }}
           token: ${{ secrets.WF_TOKEN }}
 
       - name: Tag new version
         shell: bash
+        env:
+          MESSAGE: ${{ github.event.workflow_run.head_commit.message }}
         run: |
-          MESSAGE="${{ github.event.head_commit.message }}"
-          VERSION="$(echo $MESSAGE | grep -oE $PATTERN)"
+          VERSION="$(node -p "require('./package.json').version")"
+          SUBJECT="$(printf '%s' "$MESSAGE" | head -n1)"
 
-          echo "Tagging version $VERSION"
+          if [ "$SUBJECT" != "bump version to $VERSION" ]; then
+            echo "Commit message does not match package.json version $VERSION" >&2
+            exit 1
+          fi
 
           git tag "v$VERSION"
-          git push --tags
+          git push origin "v$VERSION"

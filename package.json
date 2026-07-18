@@ -45,15 +45,18 @@
     "lint": "prettier -l",
     "fix": "prettier -w",
     "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
     "build": "unbuild",
     "watch": "unbuild --stub",
     "prepublishOnly": "pnpm build"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
+    "@vitest/coverage-v8": "^4.1.10",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "unbuild": "^3.6.1",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.10"
   }
 }
