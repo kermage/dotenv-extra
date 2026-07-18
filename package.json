@@ -17,10 +17,21 @@
     "url": "git+https://github.com/kermage/dotenv-extra.git"
   },
   "engines": {
-    "node": ">=20",
-    "pnpm": ">=10"
+    "node": ">=24",
+    "pnpm": ">=11"
   },
-  "packageManager": "pnpm@10.8.1",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^24.18.0",
+      "onFail": "error"
+    },
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.14.0",
+      "onFail": "error"
+    }
+  },
   "type": "module",
   "files": [
     "bin",

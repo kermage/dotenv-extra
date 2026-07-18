@@ -18,6 +18,7 @@ const dotEnv = new DotEnv('path-to-file');
 
 // Update or insert an entry
 dotEnv
+  // chainable
   .upsert('key', 'value')
   .upsert('foo', 'bar')
   .upsert('baz', 'qux');
